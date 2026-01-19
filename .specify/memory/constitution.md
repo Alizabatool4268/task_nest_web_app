@@ -1,55 +1,62 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!-- SYNC IMPACT REPORT:
+Version change: N/A -> 1.0.0
+Modified principles: None (new constitution)
+Added sections: All sections
+Removed sections: None
+Templates requiring updates:
+- .specify/templates/plan-template.md ✅ updated
+- .specify/templates/spec-template.md ✅ updated
+- .specify/templates/tasks-template.md ✅ updated
+- .specify/templates/commands/*.md ⚠ pending review
+Follow-up TODOs: None
+-->
+
+# Full-Stack Todo Web App Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### Security First
+All API access must be secured with JWT authentication; user data must be isolated so each user sees only their own tasks; sensitive operations require proper authorization checks.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### Clean Separation
+Maintain clear separation between UI (frontend), API (backend), and database layers; follow consistent naming conventions and REST patterns throughout the application; ensure scalable monorepo architecture.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### Minimal Viable Implementation
+Implement features incrementally following the priority order: basic features first (CRUD operations), then intermediate features (priority, tags, filters), then advanced features (recurring tasks, notifications).
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### Type Safety
+Use TypeScript strict mode throughout the codebase; maintain clean, consistent structure; eliminate unused code and dependencies; ensure all interfaces are properly typed.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### Authentication Enforcement
+Better Auth must issue JWT tokens on frontend; FastAPI must verify JWT using shared secret; every backend request must include Authorization header; enforce user_id scoping on all database queries.
 
-### [PRINCIPLE_6_NAME]
+### Monorepo Organization
+Structure the codebase with /frontend for Next.js + Better Auth, /backend for FastAPI + SQLModel + JWT middleware, and /shared for types, OpenAPI spec, and schemas.
 
+## Additional Constraints
 
-[PRINCIPLE__DESCRIPTION]
+### Database Requirements
+Use Neon PostgreSQL with SQLModel ORM; Task model must include fields: id, user_id, title, description, completed, priority, tags, due_date, recurring, created_at (UTC).
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### REST API Standards
+Implement endpoints: GET /api/{user_id}/tasks, POST /api/{user_id}/tasks, GET /api/{user_id}/tasks/{id}, PUT /api/{user_id}/tasks/{id}, DELETE /api/{user_id}/tasks/{id}, PATCH /api/{user_id}/tasks/{id}/complete; All endpoints must validate JWT and enforce user_id matching.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### Frontend Requirements
+Implement responsive UI that attaches JWT to every request; Support create/edit forms, priority/tags selection, search/filters/sorting, recurring task selector, due-date picker, and notification permissions.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Workflow
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### Implementation Priorities
+Complete basic features first (Add task, Update task, Delete task, View task list, Toggle completed), then intermediate features (Priority, Tags/Categories, Search, Filters, Sorting), then advanced features (Recurring tasks, Due date/time picker, Browser notifications, Auto-reschedule, Backend-side filtering/search/sorting).
+
+### Quality Standards
+Maintain TypeScript strict mode compliance; Follow clean, consistent structure; Remove unused code; Ensure all features meet security requirements; Test authentication integration thoroughly.
+
+### Success Criteria
+All required features must be implemented; Secure JWT authentication must be fully integrated; User isolation must be enforced globally; Recurring tasks and reminders must be functional.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+All code changes must comply with these constitutional principles; Any deviation from these principles requires explicit amendment to this document; All pull requests must verify compliance with security and architectural requirements; New features must follow the specified priority order and maintain the clean separation of concerns.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-01-09 | **Last Amended**: 2026-01-09
