@@ -1,0 +1,38 @@
+# 2
+
+## Overview
+
+[Overview of the feature]
+
+## User Scenarios & Testing
+
+[Scenarios for how users will interact with the feature]
+
+## Functional Requirements
+
+[Detailed requirements for the feature]
+
+## Success Criteria
+
+[Measurable outcomes that indicate the feature is successful]
+
+## Non-Functional Requirements
+
+[Performance, security, usability, etc. requirements]
+
+## Key Entities
+
+[Data models or entities involved in the feature]
+
+## Assumptions
+
+[Any assumptions made during specification]
+
+## Dependencies
+
+[Any dependencies on other features, systems, or resources]
+
+## Scope
+
+[What is included and what is not included in this feature]
+
