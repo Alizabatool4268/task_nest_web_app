@@ -3,7 +3,12 @@ from typing import Generator
 import os
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
+
+# Import models to ensure they're registered with SQLModel
+from .models.user import User
+from .models.task import Task
 
 # Database URL from environment variable
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/dbname")

@@ -1,47 +1,108 @@
 from sqlmodel import SQLModel, Field
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
-import uuid
+from pydantic import validator, BaseModel
+from sqlalchemy import JSON
+from .user import User
+import json
 
 
 class TaskBase(SQLModel):
-    """Base model for Task with common fields."""
     title: str = Field(nullable=False)
-    description: Optional[str] = Field(default=None)
-    completed: bool = Field(default=False)
-    priority: str = Field(default="medium")  # low, medium, high
-    tags: Optional[str] = Field(default=None)  # JSON string
-    due_date: Optional[datetime] = Field(default=None)
-    recurring: bool = Field(default=False)
-    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
-    updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    description: Optional[str] = None
+    completed: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    # Stored in DB as JSON string
+    tags: str = Field(default="[]", sa_column=JSON)
+
+    due_date: Optional[datetime] = None
+    priority: str = "medium"
+    recurrence: Optional[str] = None
 
 
 class Task(TaskBase, table=True):
-    """Task model for the database."""
     id: int = Field(default=None, primary_key=True)
-    user_id: str = Field(foreign_key="user.id")
+    user_id: str = Field(foreign_key="user.id")  # Filled from JWT only
 
-
-class TaskRead(TaskBase):
-    """Schema for reading task data."""
+class TaskRead(BaseModel):
     id: int
     user_id: str
-
-
-class TaskCreate(TaskBase):
-    """Schema for creating a new task."""
     title: str
-    user_id: str
+    description: Optional[str] = None
+    completed: bool
+    created_at: datetime
+    updated_at: datetime
+
+    # frontend sees a real list
+    tags: List[str] = []
+
+    due_date: Optional[datetime]
+    priority: str
+    recurrence: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+class TaskCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    completed: bool = False
+    tags: List[str] = []
+    due_date: Optional[datetime] = None
+    priority: str = "medium"
+    recurrence: Optional[str] = None
+
+    @validator("priority")
+    def validate_priority(cls, v):
+        if v not in ["low", "medium", "high"]:
+            raise ValueError("Priority must be one of: low, medium, high")
+        return v
+
+    @validator("recurrence")
+    def validate_recurrence(cls, v):
+        if v and v not in ["daily", "weekly", "monthly", "yearly"]:
+            raise ValueError("Recurrence must be daily, weekly, monthly, yearly")
+        return v
+
+    # Convert to DB dictionary
+    def to_orm(self, user_id: str):
+        return {
+            "title": self.title,
+            "description": self.description,
+            "completed": self.completed,
+            "tags": json.dumps(self.tags),
+            "due_date": self.due_date,
+            "priority": self.priority,
+            "recurrence": self.recurrence,
+            "user_id": user_id,
+        }
 
 
-class TaskUpdate(SQLModel):
-    """Schema for updating task data."""
+class TaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     completed: Optional[bool] = None
-    priority: Optional[str] = None
-    tags: Optional[str] = None
+    tags: Optional[List[str]] = None
     due_date: Optional[datetime] = None
-    recurring: Optional[bool] = None
-    updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    priority: Optional[str] = None
+    recurrence: Optional[str] = None
+
+    @validator("priority")
+    def validate_priority(cls, v):
+        if v and v not in ["low", "medium", "high"]:
+            raise ValueError("Priority must be low, medium, high")
+        return v
+
+    @validator("recurrence")
+    def validate_recurrence(cls, v):
+        if v and v not in ["daily", "weekly", "monthly", "yearly"]:
+            raise ValueError("Recurrence must be daily, weekly, monthly, yearly")
+        return v
+
+    def to_update_dict(self):
+        update_data = self.dict(exclude_unset=True)
+        if "tags" in update_data and update_data["tags"] is not None:
+            update_data["tags"] = json.dumps(update_data["tags"])
+        return update_data

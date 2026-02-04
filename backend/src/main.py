@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from .api.v1.endpoints import tasks
-from .middleware.jwt_middleware import JWTBearer
+from .api.v1.endpoints import auth
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
+from sqlmodel import SQLModel
+from .database import engine
 
 load_dotenv()
 
@@ -20,8 +22,15 @@ app.add_middleware(
 )
 
 # Include API routes
+app.include_router(auth.router, prefix="/api/v1")
 app.include_router(tasks.router, prefix="/api/v1")
 
+@app.on_event("startup")
+def on_startup():
+    print("Creating database tables...")
+    SQLModel.metadata.create_all(engine)
+    print("Tables created.")
+    
 @app.get("/")
 def read_root():
     return {"message": "Task Management API is running!"}
