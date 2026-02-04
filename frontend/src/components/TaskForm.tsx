@@ -200,7 +200,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
           type="text"
           id="tags"
           name="tags"
-          value={formData.tags.join(', ')}
+          value={(formData.tags || []).join(', ')}
           onChange={handleChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="work, personal, urgent"

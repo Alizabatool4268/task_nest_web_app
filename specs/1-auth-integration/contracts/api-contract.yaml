@@ -1,0 +1,203 @@
+# API Contract: Authentication Integration
+
+## Overview
+This document defines the API contracts for the authentication system, including endpoints, request/response formats, and authentication requirements.
+
+## Authentication Endpoints (Handled by Better Auth)
+**Note**: These endpoints are managed by Better Auth on the frontend and not implemented in our backend.
+
+- `POST /api/auth/signup` - User registration (via Better Auth)
+- `POST /api/auth/signin` - User login (via Better Auth)
+- `POST /api/auth/signout` - User logout (via Better Auth)
+
+## Protected Task Endpoints (Backend - FastAPI)
+
+### Get User's Tasks
+- **Endpoint**: `GET /api/v1/tasks`
+- **Authentication**: Required (JWT in Authorization header)
+- **Request Headers**:
+  - `Authorization: Bearer <jwt_token>`
+- **Response**:
+  - `200 OK`: Array of tasks belonging to the authenticated user
+    ```json
+    [
+      {
+        "id": 1,
+        "user_id": "user-uuid-string",
+        "title": "Sample task",
+        "description": "Task description",
+        "completed": false,
+        "priority": "medium",
+        "tags": ["work", "important"],
+        "due_date": "2023-12-31T23:59:59Z",
+        "recurring": false,
+        "created_at": "2023-01-01T00:00:00Z",
+        "updated_at": "2023-01-01T00:00:00Z"
+      }
+    ]
+    ```
+  - `401 Unauthorized`: Invalid or missing JWT token, expired token, malformed token, or missing claims
+
+### Create Task
+- **Endpoint**: `POST /api/v1/tasks`
+- **Authentication**: Required (JWT in Authorization header)
+- **Request Headers**:
+  - `Authorization: Bearer <jwt_token>`
+- **Request Body**:
+  ```json
+  {
+    "title": "New task",
+    "description": "Task description",
+    "priority": "medium",
+    "tags": ["work", "important"],
+    "due_date": "2023-12-31T23:59:59Z",
+    "recurring": false
+  }
+  ```
+- **Response**:
+  - `201 Created`: Task successfully created
+    ```json
+    {
+      "id": 1,
+      "user_id": "user-uuid-string",
+      "title": "New task",
+      "description": "Task description",
+      "completed": false,
+      "priority": "medium",
+      "tags": ["work", "important"],
+      "due_date": "2023-12-31T23:59:59Z",
+      "recurring": false,
+      "created_at": "2023-01-01T00:00:00Z",
+      "updated_at": "2023-01-01T00:00:00Z"
+    }
+    ```
+  - `400 Bad Request`: Invalid request data
+  - `401 Unauthorized`: Invalid or missing JWT token, expired token, malformed token, or missing claims
+
+### Get Specific Task
+- **Endpoint**: `GET /api/v1/tasks/{id}`
+- **Authentication**: Required (JWT in Authorization header)
+- **Request Headers**:
+  - `Authorization: Bearer <jwt_token>`
+- **Parameters**:
+  - `id` (path): Task ID
+- **Response**:
+  - `200 OK`: Task data if it belongs to the authenticated user
+    ```json
+    {
+      "id": 1,
+      "user_id": "user-uuid-string",
+      "title": "Sample task",
+      "description": "Task description",
+      "completed": false,
+      "priority": "medium",
+      "tags": ["work", "important"],
+      "due_date": "2023-12-31T23:59:59Z",
+      "recurring": false,
+      "created_at": "2023-01-01T00:00:00Z",
+      "updated_at": "2023-01-01T00:00:00Z"
+    }
+    ```
+  - `401 Unauthorized`: Invalid or missing JWT token, expired token, malformed token, or missing claims
+  - `404 Not Found`: Task doesn't exist or doesn't belong to the user
+
+### Update Task
+- **Endpoint**: `PUT /api/v1/tasks/{id}`
+- **Authentication**: Required (JWT in Authorization header)
+- **Request Headers**:
+  - `Authorization: Bearer <jwt_token>`
+- **Parameters**:
+  - `id` (path): Task ID
+- **Request Body**:
+  ```json
+  {
+    "title": "Updated task",
+    "description": "Updated description",
+    "priority": "high",
+    "tags": ["work", "urgent"],
+    "due_date": "2023-12-31T23:59:59Z",
+    "recurring": true
+  }
+  ```
+- **Response**:
+  - `200 OK`: Task successfully updated
+    ```json
+    {
+      "id": 1,
+      "user_id": "user-uuid-string",
+      "title": "Updated task",
+      "description": "Updated description",
+      "completed": false,
+      "priority": "high",
+      "tags": ["work", "urgent"],
+      "due_date": "2023-12-31T23:59:59Z",
+      "recurring": true,
+      "created_at": "2023-01-01T00:00:00Z",
+      "updated_at": "2023-01-02T00:00:00Z"
+    }
+    ```
+  - `400 Bad Request`: Invalid request data
+  - `401 Unauthorized`: Invalid or missing JWT token, expired token, malformed token, or missing claims
+  - `404 Not Found`: Task doesn't exist or doesn't belong to the user
+
+### Delete Task
+- **Endpoint**: `DELETE /api/v1/tasks/{id}`
+- **Authentication**: Required (JWT in Authorization header)
+- **Request Headers**:
+  - `Authorization: Bearer <jwt_token>`
+- **Parameters**:
+  - `id` (path): Task ID
+- **Response**:
+  - `204 No Content`: Task successfully deleted
+  - `401 Unauthorized`: Invalid or missing JWT token, expired token, malformed token, or missing claims
+  - `404 Not Found`: Task doesn't exist or doesn't belong to the user
+
+### Complete Task
+- **Endpoint**: `PATCH /api/v1/tasks/{id}/complete`
+- **Authentication**: Required (JWT in Authorization header)
+- **Request Headers**:
+  - `Authorization: Bearer <jwt_token>`
+- **Parameters**:
+  - `id` (path): Task ID
+- **Request Body**:
+  ```json
+  {
+    "completed": true
+  }
+  ```
+- **Response**:
+  - `200 OK`: Task completion status updated
+    ```json
+    {
+      "id": 1,
+      "user_id": "user-uuid-string",
+      "title": "Sample task",
+      "description": "Task description",
+      "completed": true,
+      "priority": "medium",
+      "tags": ["work", "important"],
+      "due_date": "2023-12-31T23:59:59Z",
+      "recurring": false,
+      "created_at": "2023-01-01T00:00:00Z",
+      "updated_at": "2023-01-02T00:00:00Z"
+    }
+    ```
+  - `400 Bad Request`: Invalid request data
+  - `401 Unauthorized`: Invalid or missing JWT token, expired token, malformed token, or missing claims
+  - `404 Not Found`: Task doesn't exist or doesn't belong to the user
+
+## Error Responses
+All error responses follow this standard format:
+```json
+{
+  "detail": "Human-readable error message"
+}
+```
+
+## Authentication Requirements
+- All backend endpoints require a valid JWT token in the Authorization header
+- Tokens must be in the format: `Bearer <token>`
+- Invalid, expired, malformed, or missing tokens result in 401 Unauthorized responses
+- JWT validation includes checking for required claims (user_id, email, exp) with proper types
+- All operations are scoped to the authenticated user's data only
+- Malformed tokens (invalid format, tampered signatures, wrong secret) are rejected with 401

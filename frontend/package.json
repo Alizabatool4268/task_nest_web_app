@@ -10,7 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "baseline-browser-mapping": "^2.9.14",
+    "axios": "^1.6.0",
+    "better-auth": "^1.4.17",
     "next": "16.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -19,11 +20,11 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "autoprefixer": "^10.4.19",
+    "autoprefixer": "^10.4.23",
     "eslint": "^9.39.2",
     "eslint-config-next": "16.0.0",
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5"
   },
   "keywords": [
@@ -33,7 +34,8 @@
     "task-management",
     "nextjs",
     "typescript",
-    "tailwind-css"
+    "tailwind-css",
+    "authentication"
   ],
   "author": "Todo App Team",
   "license": "MIT"
