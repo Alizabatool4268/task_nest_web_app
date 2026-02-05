@@ -8,4 +8,5 @@ export interface Task {
   due_date?: string;
   recurring?: string;
   created_at: string;
+  recurrence?: string | null;
 }

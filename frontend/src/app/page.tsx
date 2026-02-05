@@ -9,9 +9,10 @@ const HomePage = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       <div className="py-12">
-      <div className="container mx-auto px-4 max-w-6xl">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">Todo App</h1>
+      <div className="container mx-auto px-4 max-w-6xl ">
+        
+        <div className="text-center mb-12 bg-blue-100 h-screen flex justify-center items-center flex-col">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black mb-4">TASKNEST</h1>
           <p className="text-base sm:text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             Manage your tasks efficiently with our simple and intuitive interface
           </p>
@@ -19,13 +20,13 @@ const HomePage = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
               href="/tasks"
-              className="px-5 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 transition duration-200 text-base sm:text-lg"
+              className="px-5 py-3 bg-blue-900 text-white font-medium rounded-lg shadow-md hover:bg-orange-700 transition duration-200 text-base sm:text-lg"
             >
               View Tasks
             </Link>
             <Link
               href="/add"
-              className="px-5 py-3 bg-green-600 text-white font-medium rounded-lg shadow-md hover:bg-green-700 transition duration-200 text-base sm:text-lg"
+              className="px-5 py-3 bg-blue-900 text-white font-medium rounded-lg shadow-md hover:bg-orange-700 transition duration-200 text-base sm:text-lg"
             >
               Add New Task
             </Link>
@@ -57,7 +58,7 @@ const HomePage = () => {
         </div>
 
         <div className="mt-8 text-center text-gray-500 text-sm">
-          <p>Your tasks are securely stored in your browser's LocalStorage</p>
+          <p>Your tasks are securely stored in Database</p>
         </div>
       </div>
     </div>

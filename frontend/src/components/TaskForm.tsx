@@ -19,7 +19,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     priority: task?.priority || '',
     tags: task?.tags || [],
     due_date: task?.due_date || '',
-    recurring: task?.recurring || ''
+    recurrence: task?.recurrence || null
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -174,13 +174,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
         </div>
 
         <div>
-          <label htmlFor="recurring" className="block text-sm font-medium text-gray-700 mb-1">
-            Recurring
+          <label htmlFor="recurrence" className="block text-sm font-medium text-gray-700 mb-1">
+            recurrence
           </label>
           <select
-            id="recurring"
-            name="recurring"
-            value={formData.recurring}
+            id="recurrence"
+            name="recurrence"
+            value={formData.recurrence || ""}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
