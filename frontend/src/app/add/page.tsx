@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Task } from '../../types/task';
 import Footer from '@/components/Footer';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://aliza5-task-nest.hf.space';
 
 const AddTaskPage = () => {
   const router = useRouter();

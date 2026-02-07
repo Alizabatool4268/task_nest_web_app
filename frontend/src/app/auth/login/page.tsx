@@ -14,7 +14,7 @@ const LoginPage = () => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:8000"}/api/v1/auth/login`,
+        `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "https://aliza5-task-nest.hf.space"}/api/v1/auth/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

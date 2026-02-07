@@ -13,7 +13,7 @@ const SignupPage = () => {
   const handleSignUp = async (name: string, email: string, password: string) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL || 'http://localhost:8000'}/api/v1/auth/signup`,
+        `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL || 'https://aliza5-task-nest.hf.space'}/api/v1/auth/signup`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

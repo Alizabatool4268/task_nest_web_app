@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 
 export const myAuth = betterAuth({
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:8000",
+  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "https://aliza5-task-nest.hf.space",
   secret: process.env.BETTER_AUTH_SECRET || "fallback-secret-for-dev",
   emailAndPassword: {
     enabled: true,
