@@ -7,10 +7,10 @@ import Link from 'next/link';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
-// Tasks API client
+// Tasks API client. on line 13
 const tasksAPI = {
   getAll: (token: string) =>
-    apiClient.get('/tasks', {
+    apiClient.get('/tasks/', {  
       headers: { Authorization: `Bearer ${token}` }
     }),
 
