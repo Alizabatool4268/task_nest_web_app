@@ -1,110 +1,63 @@
-import { useAuth } from '@better-auth/react';
-import api from './api';
+// src/services/auth.ts
 
-// Authentication service for handling authentication-related API calls
-class AuthService {
-  /**
-   * Get current user's authentication status
-   */
-  static isAuthenticated(): boolean {
-    // Check if user is authenticated using Better Auth
-    // This would typically involve checking for the existence of a valid session/token
-    if (typeof window !== 'undefined') {
-      const sessionToken = localStorage.getItem('better-auth-session-token');
-      return !!sessionToken;
-    }
-    return false;
-  }
+const API_URL = "http://localhost:8000/api/v1/auth";
 
-  /**
-   * Get JWT token from Better Auth
-   */
-  static getAuthToken(): string | null {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('better-auth-session-token');
-      return token ? `Bearer ${token}` : null;
-    }
-    return null;
-  }
+// ----------------------
+// TOKEN HELPERS
+// ----------------------
 
-  /**
-   * Store JWT token in appropriate location
-   */
-  static setAuthToken(token: string): void {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('better-auth-session-token', token);
-    }
-  }
+export const AuthToken = {
+  get() {
+    if (typeof window === "undefined") return null;
+    return sessionStorage.getItem("token");
+  },
 
-  /**
-   * Remove JWT token (logout)
-   */
-  static removeAuthToken(): void {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('better-auth-session-token');
-    }
-  }
+  set(token: string) {
+    if (typeof window === "undefined") return;
+    sessionStorage.setItem("token", token);
+  },
 
-  /**
-   * Refresh token if needed
-   */
-  static async refreshToken(): Promise<string | null> {
-    // In a real implementation, this would call an API endpoint to refresh the token
-    // For Better Auth, this might be handled automatically, but we'll provide a method
-    try {
-      // Attempt to get a new token using refresh logic
-      // This is a placeholder - actual implementation depends on Better Auth's refresh mechanism
-      return this.getAuthToken();
-    } catch (error) {
-      console.error('Failed to refresh token:', error);
-      return null;
-    }
-  }
+  remove() {
+    if (typeof window === "undefined") return;
+    sessionStorage.removeItem("token");
+  },
 
-  /**
-   * Handle JWT expiration
-   */
-  static async handleTokenExpiration(): Promise<void> {
-    console.log('Token has expired, redirecting to login...');
-    this.removeAuthToken();
+  isAuthenticated() {
+    return !!this.get();
+  },
+};
 
-    // Redirect to login page
-    if (typeof window !== 'undefined') {
-      window.location.href = '/auth/login';
-    }
-  }
+// ----------------------
+// AUTH API ACTIONS
+// ----------------------
 
-  /**
-   * Handle different types of authentication errors
-   */
-  static handleAuthError(error: any): void {
-    console.error('Authentication error:', error);
+export async function login(email: string, password: string) {
+  const res = await fetch(`${API_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
 
-    // Check error type and handle appropriately
-    if (error?.response?.status === 401) {
-      console.error('Unauthorized access - token invalid or expired');
-      this.handleTokenExpiration();
-    } else if (error?.response?.status === 403) {
-      console.error('Forbidden access - insufficient permissions');
-      // Show appropriate error message to user
-    } else {
-      console.error('General authentication error');
-      // Handle other auth errors
-    }
-  }
+  if (!res.ok) throw new Error("Invalid email or password");
+
+  const data = await res.json();
+  AuthToken.set(data.access_token);
+
+  return data;
 }
 
-export default AuthService;
+export async function registerUser(payload: any) {
+  const res = await fetch(`${API_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
 
-// Hook for using auth in components (if needed beyond Better Auth's built-in hooks)
-export const useAuthService = () => {
-  const { signIn, signOut, session } = useAuth();
+  if (!res.ok) throw new Error("Registration failed");
 
-  return {
-    login: signIn,
-    logout: signOut,
-    session,
-    isAuthenticated: !!session,
-    authService: AuthService
-  };
-};
+  return await res.json();
+}
+
+export function logout() {
+  AuthToken.remove();
+}

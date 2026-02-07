@@ -12,6 +12,7 @@ const config: Config = {
         'xs': '320px',    // Extra small mobile
         'xl': '1200px',   // Extra large desktop
         '2xl': '1920px',  // 2x large desktop
+        'xm' : '466px'
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
