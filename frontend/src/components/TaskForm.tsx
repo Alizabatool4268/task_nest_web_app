@@ -5,6 +5,7 @@ import { Task } from '../types/task';
 
 interface TaskFormProps {
   task?: Task;
+  initialData?: Omit<Task, "id" | "created_at">;
   onSubmit: (task: Omit<Task, 'id' | 'created_at'> | Task) => void;
   onCancel?: () => void;
 }

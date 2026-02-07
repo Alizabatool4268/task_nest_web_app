@@ -24,19 +24,19 @@ const Navigation = () => {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className="bg-gray-800 text-white shadow-lg">
+    <nav className="bg-blue-900 text-white shadow-lg">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 xs:justify-center sm:justify-around md:justify-between xm:justify-around">
           <div className="flex items-center">
             <Link
               href="/"
               className="text-xl font-bold text-white hover:text-gray-200"
             >
-              Todo App
+              Task nest
             </Link>
           </div>
 
-          <div className="flex space-x-4 items-center">
+          <div className="flex space-x-4 items-center xs:space-x-1 sm:space-x-4 ">
             <Link
               href="/"
               className={`px-3 py-2 rounded-md text-sm font-medium ${
@@ -72,7 +72,7 @@ const Navigation = () => {
             {isLoggedIn && (
               <button
                 onClick={handleLogout}
-                className="px-3 py-2 rounded-md text-sm font-medium text-red-400 hover:text-red-600 hover:bg-gray-700"
+                className="px-3 py-2 rounded-md text-sm font-medium bg-black text-white hover:text-red-600 hover:bg-gray-700"
               >
                 Logout
               </button>

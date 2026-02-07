@@ -1,6 +1,6 @@
-import { createAuth } from "better-auth";
+import { betterAuth } from "better-auth";
 
-export const auth = createAuth({
+export const myAuth = betterAuth({
   baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:8000",
   secret: process.env.BETTER_AUTH_SECRET || "fallback-secret-for-dev",
   emailAndPassword: {
@@ -12,6 +12,3 @@ export const auth = createAuth({
     rememberMe: true,
   },
 });
-
-// Export the auth client
-export { auth };

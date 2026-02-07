@@ -5,6 +5,7 @@ import TaskForm from '../../components/TaskForm';
 import Navigation from '../../components/Navigation';
 import { useRouter } from 'next/navigation';
 import { Task } from '../../types/task';
+import Footer from '@/components/Footer';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -106,7 +107,7 @@ const AddTaskPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-white">
       <Navigation />
 
       <div className="py-12">
@@ -123,7 +124,7 @@ const AddTaskPage = () => {
             </div>
           )}
 
-          <TaskForm initialData={task} onSubmit={handleTaskSubmit} />
+          <TaskForm initialData={task} onSubmit={handleTaskSubmit}  />
 
           {submitting && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -144,6 +145,7 @@ const AddTaskPage = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

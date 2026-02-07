@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import apiClient from '../../services/api';
 import { Task } from '../../types/task';
 import Link from 'next/link';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 // Tasks API client
 const tasksAPI = {
@@ -107,12 +109,15 @@ const handleToggleComplete = async (task: Task) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <section>
+    <Navigation />
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
 
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-gray-900">My Tasks</h1>
           <p className="mt-2 text-gray-600">Manage your personal tasks</p>
+          <p className='mt-2 text-gray-600'>While editing tasks, you can update their title, description, recurrence, status,  priority, and due date. make sure to send all fields</p>
           <Link href={"/add"} className="text-blue-600 hover:text-blue-800 font-medium">
             ← Back to Form
           </Link>
@@ -124,17 +129,17 @@ const handleToggleComplete = async (task: Task) => {
           </div>
         )}
 
-        <div className="bg-white shadow sm:rounded-md overflow-hidden">
+        <div className="bg-white  shadow sm:rounded-md overflow-hidden">
           <ul className="divide-y divide-gray-200">
             {tasks.length === 0 ? (
-              <li className="px-4 py-5 sm:px-6">
+              <li className="px-4 py-5 sm:px-6 ">
                 <p className="text-gray-500">No tasks found. Add a new task!</p>
               </li>
             ) : (
               tasks.map(task => (
                 <li
-                  key={task.id}
-                  className="px-4 py-5 sm:px-6 hover:bg-gray-50 flex justify-between items-center"
+                key={task.id}
+                className="px-4 py-5 sm:px-6 hover:bg-gray-50 flex justify-between items-center md:flex-row md:justify-between md:items-center xs:flex-col xs:items-start "
                 >
                   <div className="flex items-center">
                     {/* Completion Checkbox */}
@@ -143,7 +148,7 @@ const handleToggleComplete = async (task: Task) => {
                       checked={task.completed}
                       onChange={() => handleToggleComplete(task)}
                       className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                    />
+                      />
 
                     {/* Task Content */}
                     <div className="ml-3">
@@ -159,11 +164,11 @@ const handleToggleComplete = async (task: Task) => {
                       <div className="mt-1 flex items-center text-xs text-gray-500">
                         <span className={`px-2 py-0.5 rounded-full ${
                           task.priority === "high"
-                            ? "bg-red-100 text-red-800"
-                            : task.priority === "medium"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-green-100 text-green-800"
-                        }`}>
+                          ? "bg-red-100 text-red-800"
+                          : task.priority === "medium"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-green-100 text-green-800"
+                          }`}>
                           {task.priority}
                         </span>
 
@@ -179,13 +184,24 @@ const handleToggleComplete = async (task: Task) => {
                         <div className="mt-1 text-xs">
                           <span className={`px-2 py-0.5 rounded-full ${
                             task.recurrence === "monthly"
-                              ? "bg-blue-100 text-blue-800"
-                              : task.recurrence === "weekly"
-                              ? "bg-teal-100 text-teal-900"
-                              : "bg-purple-100 text-purple-900"
-                          }`}>
+                            ? "bg-blue-100 text-blue-800"
+                            : task.recurrence === "weekly"
+                            ? "bg-teal-100 text-teal-900"
+                            : "bg-purple-100 text-purple-900"
+                            }`}>
                             {task.recurrence}
                           </span>
+                        </div>
+                      )}
+                      
+                      {/* Tags */}
+                      {task.tags && task.tags.length > 0 && (
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          {task.tags.map((tag, index) => (
+                            <span key={index} className="px-2 py-0.5 text-xs bg-gray-100 text-gray-800 rounded-full">
+                              {tag}
+                            </span>
+                          ))}
                         </div>
                       )}
                     </div>
@@ -196,14 +212,14 @@ const handleToggleComplete = async (task: Task) => {
                     <button
                       onClick={() => handleEditTask(task)}
                       className="px-2.5 py-0.5 border text-xs rounded bg-white"
-                    >
+                      >
                       Edit
                     </button>
 
                     <button
                       onClick={() => handleDeleteTask(Number(task.id))}
                       className="px-2.5 py-0.5 text-xs text-white bg-red-600 rounded"
-                    >
+                      >
                       Delete
                     </button>
                   </div>
@@ -215,6 +231,8 @@ const handleToggleComplete = async (task: Task) => {
 
       </div>
     </div>
+    <Footer/>
+    </section> 
   );
 };
 
