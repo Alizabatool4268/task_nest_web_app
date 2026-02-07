@@ -1,6 +1,6 @@
 // src/services/auth.ts
 
-const API_URL = "http://localhost:8000/api/v1/auth";
+const API_URL = "https://aliza5-task-nest.hf.space/api/v1/auth";
 
 // ----------------------
 // TOKEN HELPERS
