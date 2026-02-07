@@ -79,7 +79,7 @@ const AddTaskPage = () => {
       const url =
         isUpdate && taskId
           ? `${API_BASE}/api/v1/tasks/${taskId}`
-          : `${API_BASE}/api/v1/tasks`;
+          : `${API_BASE}/api/v1/tasks/`;
 
       const method = isUpdate ? 'PUT' : 'POST';
 
