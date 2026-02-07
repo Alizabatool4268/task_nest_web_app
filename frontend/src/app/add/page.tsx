@@ -34,7 +34,7 @@ const AddTaskPage = () => {
     }
   }, [router]);
 
-  // Detect update mode and fetch data
+  // Detect update mode and the fetch data
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     const id = query.get('taskId');
