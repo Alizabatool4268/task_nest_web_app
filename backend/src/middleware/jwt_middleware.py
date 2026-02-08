@@ -9,47 +9,50 @@ from functools import lru_cache
 
 load_dotenv()
 
-# JWT Configuration
+# ---------------------------------------------
+# JWT CONFIGURATION
+# ---------------------------------------------
+
 JWT_SECRET = os.getenv("BETTER_AUTH_SECRET")
 if not JWT_SECRET:
     raise ValueError("BETTER_AUTH_SECRET environment variable is not set")
 
-# Performance optimization: cache decoded payloads
+# Load algorithm from env or default to HS256
+JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+
+# ---------------------------------------------
+# CACHED TOKEN DECODER
+# ---------------------------------------------
 @lru_cache(maxsize=128)
 def cached_decode(token: str, secret: str) -> dict:
     """
     Cached JWT decoding function for performance optimization.
-
-    Args:
-        token (str): JWT token to decode
-        secret (str): Secret key for decoding
-
-    Returns:
-        dict: Decoded token payload
+    Ensures consistent algorithm usage.
     """
-    return jwt.decode(token, secret, algorithms=["HS512"])
+    return jwt.decode(token, secret, algorithms=[JWT_ALGORITHM])
 
 
+# ---------------------------------------------
+# MODELS
+# ---------------------------------------------
 class JWTMeta(BaseModel):
-    """JWT metadata model."""
     exp: int
     user_id: str
     email: str
 
 
+# ---------------------------------------------
+# JWT BEARER CLASS
+# ---------------------------------------------
 class JWTBearer(HTTPBearer):
-    """Custom JWT Bearer authentication scheme."""
-
     def __init__(self, auto_error: bool = True):
         super(JWTBearer, self).__init__(auto_error=auto_error)
 
     async def __call__(self, request: Request):
-        credentials: Optional[HTTPAuthorizationCredentials] = await super(
-            JWTBearer, self
-        ).__call__(request)
+        credentials: Optional[HTTPAuthorizationCredentials] = await super().__call__(request)
 
         if credentials:
-            if not credentials.scheme == "Bearer":
+            if credentials.scheme != "Bearer":
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Invalid authentication scheme."
@@ -57,84 +60,63 @@ class JWTBearer(HTTPBearer):
 
             token = credentials.credentials
 
-            # Verify token and extract user_id
+            # Validate token
             user_id = self.verify_jwt(token)
 
             if not user_id:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Invalid token or expired token."
+                    detail="Invalid or expired token."
                 )
 
-            # Attach user_id to request
+            # Attach current user to request
             request.state.user_id = user_id
             return token
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Invalid authorization code."
-            )
 
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid authorization code."
+        )
+
+    # -----------------------------------------
+    # TOKEN VERIFICATION
+    # -----------------------------------------
     def verify_jwt(self, token: str) -> Optional[str]:
-        """
-        Verify JWT token and return user_id if valid.
-        Includes performance optimizations and strict validation.
-
-        Args:
-            token (str): JWT token to verify
-
-        Returns:
-            Optional[str]: user_id if token is valid, None otherwise
-        """
         try:
-            # Use cached decoding for performance
             payload = cached_decode(token, JWT_SECRET)
 
             # Validate required claims
-            if 'user_id' not in payload or 'email' not in payload or 'exp' not in payload:
+            if "user_id" not in payload or "email" not in payload or "exp" not in payload:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Token missing required claims (user_id, email, exp)."
                 )
 
             # Additional validation
-            if not isinstance(payload['user_id'], str) or not payload['user_id']:
+            if not isinstance(payload["user_id"], str) or not payload["user_id"]:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Invalid user_id in token."
                 )
 
-            if not isinstance(payload['email'], str) or '@' not in payload['email']:
+            if not isinstance(payload["email"], str) or "@" not in payload["email"]:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Invalid email in token."
                 )
 
-            if not isinstance(payload['exp'], int) or payload['exp'] <= 0:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Invalid expiration in token."
-                )
-
-            return payload['user_id']
+            return payload["user_id"]
 
         except jwt.ExpiredSignatureError:
-            # Clear cache for expired token
             cached_decode.cache_clear()
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Token has expired."
-            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Token has expired.")
+
         except jwt.InvalidSignatureError:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Invalid token signature."
-            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token signature.")
+
         except jwt.DecodeError:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Malformed token."
-            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Malformed token.")
+
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -142,15 +124,11 @@ class JWTBearer(HTTPBearer):
             )
 
 
-# Function to extract user_id from token (for use in dependencies)
-def get_current_user_id(request: Request) -> str:
+# ---------------------------------------------
+# EXTRACT USER ID FROM REQUEST (DEPENDENCY)
+# ---------------------------------------------
+def get_current_user_id(request: Request) -> Optional[str]:
     """
-    Get current user_id from request state.
-
-    Args:
-        request (Request): FastAPI request object
-
-    Returns:
-        str: Current user's ID
+    Used inside endpoints to get logged-in user's ID.
     """
-    return getattr(request.state, 'user_id', None)
+    return getattr(request.state, "user_id", None)

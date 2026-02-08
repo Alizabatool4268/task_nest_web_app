@@ -82,9 +82,17 @@ def get_current_user(
     token = credentials.credentials
     try:
         payload = verify_token(token)
-        user_id: str = payload.get("sub")
+        
+        # Check for None payload first!
+        if payload is None:
+            raise credentials_exception
+        
+        # Try both 'sub' and 'user_id' to be safe
+        user_id: str = payload.get("sub") or payload.get("user_id")
+        
         if user_id is None:
             raise credentials_exception
+            
     except JWTError:
         raise credentials_exception
 
